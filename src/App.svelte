@@ -2,13 +2,14 @@
   import { onMount } from "svelte";
   import "./app.css";
   
+  // Stockage du token d'identification lors de la connexion vers l'API Mistral
   localStorage.setItem("token", "j9hEz9GGkoYnElQmkGnkXwGTncS3TU2l");
   const token = localStorage.getItem("token");
 
-  // Création de la variable pour envoi du formulaire vers l'API du Chat
+  // Création de la variable pour envoi du formulaire vers l'API Mistral
   let messagesInput = $state("");
 
-  // Création d'une variable pour stocker les réponses de l'IA Mistral
+  // Création de la variable pour stocker les réponses de l'API Mistral
   let messageAPI = $state([""]);
   
 
@@ -34,6 +35,23 @@
         console.log(`Réponse IA: ${messageAPI}`);
       });
   }
+
+  // Fonction pour envoyer le message utilisateur vers Pocketbase
+  async function saveMessagetToPocketbase(content, isAiResponse = false) {
+  await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({
+      content,
+      is_ai_response: isAiResponse
+    })
+  });
+}
+
+  saveMessagetToPocketbase
+
   
 
 </script>
