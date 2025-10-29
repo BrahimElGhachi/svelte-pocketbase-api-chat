@@ -21,7 +21,7 @@
     event.preventDefault();
 
     // 1) Stocker le message utilisateur dans pocketbase
-    await saveMessagetToPocketbase(messagesInput, false);
+    await saveMessageToPocketbase(messagesInput, false);
 
     // 2) Envoyer une question à l'API Mistral
     fetch("https://api.mistral.ai/v1/chat/completions", {
@@ -51,7 +51,7 @@
   }
 
     // Fonction pour envoyer le message utilisateur vers Pocketbase
-    async function saveMessagetToPocketbase(content, isAiResponse = false) {
+    async function saveMessageToPocketbase(content, isAiResponse = false) {
   await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage/records", {
     method: "POST",
     headers: {
@@ -63,10 +63,10 @@
     })
   });
 }
-  saveMessagetToPocketbase
+  saveMessageToPocketbase
 
   async function loadMessages() {
-    const response = await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage/records/:id");
+    const response = await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage/records/");
     const data = await response.json();
     // trie les messages par ordre chrono; 
     messageAPI = data.items.map(item => item.content);
