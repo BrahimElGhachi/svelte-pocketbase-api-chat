@@ -11,12 +11,19 @@
 
   // Création de la variable pour stocker les réponses de l'API Mistral
   let messageAPI = $state([""]);
-  
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+
 
   // Fonction pour envoyer requête (formulaire vers API Mistral)
   async function handleSubmitForm(event) {
-    event.preventDefault(); // Fonction pour envoyer requête (formulaire vers API Mistral)t();
+    event.preventDefault();
 
+    // 1) Stocker le message utilisateur dans pocketbase
+    await saveMessagetToPocketbase(messagesInput, false);
+
+    // 2) Envoyer une question à l'API Mistral
     fetch("https://api.mistral.ai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -34,11 +41,18 @@
         messageAPI = data.choices[0].message.content;
         console.log(`Réponse IA: ${messageAPI}`);
       });
+
+      // 3) stocker la réponse de l'API Mistral dans pocketbase
+      const aiContent = data.choices[0].message.content;
+      await saveMessageToPocketbase(aiContent, true);
+
+      // 4) Remettre à jour le chat local
+      loadMessages();
   }
 
-  // Fonction pour envoyer le message utilisateur vers Pocketbase
-  async function saveMessagetToPocketbase(content, isAiResponse = false) {
-  await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage", {
+    // Fonction pour envoyer le message utilisateur vers Pocketbase
+    async function saveMessagetToPocketbase(content, isAiResponse = false) {
+  await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage/records", {
     method: "POST",
     headers: {
       "Content-type": "application/json",
@@ -49,10 +63,19 @@
     })
   });
 }
-
   saveMessagetToPocketbase
 
-  
+  async function loadMessages() {
+    const response = await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage/records/:id");
+    const data = await response.json();
+    // trie les messages par ordre chrono; 
+    messageAPI = data.items.map(item => item.content);
+  }
+
+  // Au démarrage du composant, charge l'historique
+  onMount(() => {
+    loadMessages();
+  });
 
 </script>
 
