@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import "./app.css";
-  
+
   // Stockage du token d'identification lors de la connexion vers l'API Mistral
   localStorage.setItem("token", "j9hEz9GGkoYnElQmkGnkXwGTncS3TU2l");
   const token = localStorage.getItem("token");
@@ -12,64 +12,71 @@
   // Création de la variable pour stocker les réponses de l'API Mistral
   let messageAPI = $state([""]);
 
-
   //////////////////////////////////////////////////////////////////////////////////////////
-
 
   // Fonction pour envoyer requête (formulaire vers API Mistral)
   async function handleSubmitForm(event) {
     event.preventDefault();
 
-    // 1) Stocker le message utilisateur dans pocketbase
-    await saveMessageToPocketbase(messagesInput, false);
+    // 1) Stocker le message utilisateur dans pocketbase (booléen false - user request)
+    await saveMessagetToPocketbase(messagesInput, false);
 
-    // 2) Envoyer une question à l'API Mistral
-    fetch("https://api.mistral.ai/v1/chat/completions", {
+    // 2) Envoyer la question à l'API Mistral
+    const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-
       body: JSON.stringify({
         model: "mistral-medium-latest",
-        messages: [{ role: "user", content: (messagesInput)}],
+        messages: [{ role: "user", content: messagesInput }],
       }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        messageAPI = data.choices[0].message.content;
-        console.log(`Réponse IA: ${messageAPI}`);
-      });
+    });
 
-      // 3) stocker la réponse de l'API Mistral dans pocketbase
-      const aiContent = data.choices[0].message.content;
-      await saveMessageToPocketbase(aiContent, true);
+    const data = await response.json();
+    const aiContent = data.choices[0].message.content;
 
-      // 4) Remettre à jour le chat local
-      loadMessages();
+    // 3) Affichage local
+    messageAPI = aiContent;
+
+    // 4) Stockage dans Pocketbase (booléen true - API Mistral reply)
+    await saveMessagetToPocketbase(aiContent, true);
+
+    // 5) Rafraichissement
+    await loadMessages();
+
+    // 6) Nettoyer l'input
+    messagesInput = "";
   }
 
-    // Fonction pour envoyer le message utilisateur vers Pocketbase
-    async function saveMessageToPocketbase(content, isAiResponse = false) {
-  await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage/records", {
-    method: "POST",
-    headers: {
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify({
-      content,
-      is_ai_response: isAiResponse
-    })
-  });
-}
-  saveMessageToPocketbase
 
+  // Fonction pour envoyer le message utilisateur vers Pocketbase
+  async function saveMessagetToPocketbase(content, isAiResponse = false) {
+    await fetch(
+      "http://127.0.0.1:8090/api/collections/MessageMistralStorage/records",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          content,
+          is_ai_response: isAiResponse,
+        }),
+      },
+    );
+  }
+  saveMessagetToPocketbase;
+
+  
   async function loadMessages() {
-    const response = await fetch("http://127.0.0.1:8090/api/collections/MessageMistralStorage/records/");
+    const response = await fetch(
+      "http://127.0.0.1:8090/api/collections/MessageMistralStorage/records",
+    );
     const data = await response.json();
-    // trie les messages par ordre chrono; 
-    messageAPI = data.items.map(item => item.content);
+    // trie les messages par ordre chrono;
+    messageAPI = data.items.map((item) => item.content);
   }
 
   // Au démarrage du composant, charge l'historique
@@ -78,6 +85,8 @@
   });
 
 </script>
+
+
 
 <div class="layout">
   <!-- Header -->
@@ -102,13 +111,13 @@
 
     <!-- Chat Content -->
     <div class="chat">
-      <h3>Messages</h3>
+      <h3>Hello, je suis ton assistant virtuel, comment puis-je t'aider ?</h3>
 
       <div class="messages-field">
         <p class="message-user">{messagesInput}</p>
         <p class="message-bot">
           {#each messageAPI as message}
-          {message}
+            {message}
           {/each}
         </p>
         <p></p>
@@ -123,7 +132,8 @@
             id="messageInput"
             placeholder="Pose ta question içi"
             class="message-input"
-            bind:value={messagesInput} />
+            bind:value={messagesInput}
+          />
           <button type="submit" class="send-button">Créer</button>
         </form>
       </footer>
