@@ -106,3 +106,84 @@ border-radius: 25px;
 .logo {
   width: 150px;
 }
+
+
+
+@media screen and (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    margin-top: 0;
+    text-align: center;
+  }
+
+  .logo-area {
+    width: 100%;
+    justify-content: center;
+    border-right: none;
+    margin-bottom: 1rem;
+  }
+
+  .logo {
+    width: 8rem;
+  }
+
+  .title-area {
+    width: 100%;
+    font-size: 1.5rem;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .main {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-right: none;
+    border-bottom: 1px solid black;
+  }
+
+  .chat-button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+  }
+
+  .chat {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .message-user {
+    width: auto;
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  .message-input {
+    width: 100%;
+    font-size: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .send-button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}
