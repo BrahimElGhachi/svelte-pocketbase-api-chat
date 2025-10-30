@@ -14,7 +14,7 @@
   // Messages de la conversation en cours (actuellement affichée à l'écran)
   let currentConversation = $state([]);
 
-  // Historique complet de toutes les conversations
+  // Historique complet de toutes les conversations. La clé "active = true" corresponds à la discussion en cours
   let conversations = $state([
     {
       id: 1,
@@ -28,7 +28,7 @@
   async function handleSubmitForm(event) {
     event.preventDefault();
 
-    const activeConversation = conversations.find((c) => c.active);
+    const activeConversation = conversations.find((c) => c.active); // Variable défini si la discussion en cours a la valeur "true" et quel chat elle se trouve (chat1 ou chat2 ou chat3)
 
     // Ajout du message utilisateur
     const userMessage = { role: "user", content: messagesInput }; // Variable qui stocke le message du user selon le standard de Mistral
