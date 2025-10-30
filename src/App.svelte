@@ -1,15 +1,17 @@
 <script>
   import { onMount } from "svelte";
   import "./app.css";
+  import FicheMarkdown from "./FicheMarkdown.svelte";
+
 
   // Stockage du token d'identification
-  localStorage.setItem("token", "j9hEz9GGkoYnElQmkGnkXwGTncS3TU2l");
+  localStorage.setItem("token", "Q9FnG4UW8dtBzbSHZuGixLL2JdkuLs1r");
   const token = localStorage.getItem("token");
 
-  // Texte saisi par l'utilisateur
+  // Texte saisi par l'utilisateur dans le formulaire
   let messagesInput = $state("");
 
-  // Messages de la conversation en cours
+  // Messages de la conversation en cours (actuellement affichée à l'écran)
   let currentConversation = $state([]);
 
   // Historique complet de toutes les conversations
@@ -17,7 +19,7 @@
     {
       id: 1,
       title: "Chat 1",
-      messages: [],
+      messages: [], // Tableau qui va stocker les messages contenus dans la variable "messageInput" (message du user)
       active: true,
     },
   ]);
@@ -28,12 +30,13 @@
 
     const activeConversation = conversations.find((c) => c.active);
 
-    // 1️⃣ Ajout du message utilisateur
-    const userMessage = { role: "user", content: messagesInput };
-    activeConversation.messages.push(userMessage);
-    await saveMessagetToPocketbase(messagesInput, false);
+    // Ajout du message utilisateur
+    const userMessage = { role: "user", content: messagesInput }; // Variable qui stocke le message du user selon le standard de Mistral
+    activeConversation.messages.push(userMessage); // Etape pour stocker dans le tableau message chaque message tapé par l'utilisateur
+    await saveMessageToPocketbase(messagesInput, false); // fonction qui prends en paramètre le message du user + false (et stocke dans pocketbase chaque message du user avec un statut false)
 
-    // 2️⃣ Envoi à l'API Mistral
+
+    // Envoi à l'API Mistral
     const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -42,33 +45,34 @@
       },
       body: JSON.stringify({
         model: "mistral-medium-latest",
-        messages: activeConversation.messages,
+        messages: activeConversation.messages, // envoi à l'API Mistral le message de l'utilisateur dans la discussion courante
       }),
     });
 
     const data = await response.json();
     const aiContent = data.choices?.[0]?.message?.content || "Pas de réponse reçue.";
 
-    // 3️⃣ Ajout du message de l'IA
-    const aiMessage = { role: "assistant", content: aiContent };
-    activeConversation.messages.push(aiMessage);
-    await saveMessagetToPocketbase(aiContent, true);
 
-    // 4️⃣ Mise à jour de la conversation affichée
-    currentConversation = activeConversation.messages;
+    //Ajout du message de l'IA
+    const aiMessage = { role: "assistant", content: aiContent }; // Variable qui stocke le message de l'IA 
+    activeConversation.messages.push(aiMessage); // Etape pour stocker dans le tableau message chaque message reçu de l'IA
+    await saveMessageToPocketbase(aiContent, true); // fonction qui prends en paramètre le message de l'IA + true (et stocke dans pocketbase chaque message de l'IA avec un statut true)
 
-    // 5️⃣ Vide l’input
-    messagesInput = "";
+    //Mise à jour de la conversation affichée
+    currentConversation = activeConversation.messages; // création d'une variable qui affiche à l'écran la conversation entre le user et l'IA
+
+    //Vide l’input
+    messagesInput = ""; // vide le formulaire après chaque requête
   }
 
-  // Fonction pour enregistrer un message dans Pocketbase
-  async function saveMessagetToPocketbase(content, isAiResponse = false) {
+  // Fonction pour enregistrer un message dans Pocketbase 
+  async function saveMessageToPocketbase(content, isAiResponse = false) {
     await fetch(
       "http://127.0.0.1:8090/api/collections/MessageMistralStorage/records",
       {
         method: "POST",
         headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ content, is_ai_response: isAiResponse }),
+        body: JSON.stringify({ content, is_ai_response: isAiResponse }),// -> enregiste les valeurs dans pocketbase selon le standard de la collection (content + false); IsAiResponse est défini comme false en paramètre et chaque message du user sera enregistré en false
       }
     );
   }
@@ -80,23 +84,26 @@
     );
     const data = await response.json();
 
-    // Tu pourrais ici reconstruire les conversations depuis la base
+    // Recupères les échanges entre l'IA et le user dans pocketbase
     currentConversation = data.items.map((item) => ({
-      role: item.is_ai_response ? "assistant" : "user",
+      role: item.is_ai_response ? "assistant" : "user", 
       content: item.content,
     }));
   }
 
+  
   onMount(() => {
     loadMessages();
   });
 
-  // Changer de conversation
+
+  // fonction pour changement de conversation
   function selectConversation(id) {
     conversations.forEach((c) => (c.active = c.id === id));
     const selected = conversations.find((c) => c.id === id);
     currentConversation = selected.messages;
   }
+
 
   // Créer une nouvelle conversation
   function newConversation() {
@@ -151,7 +158,7 @@
         {/each}
       </div>
 
-      <!-- Saisie du message -->
+      <!-- Saisie du message dans le formulaire -->
       <footer class="input-area">
         <form on:submit={handleSubmitForm}>
           <input
