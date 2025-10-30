@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import "./app.css";
-  import FicheMarkdown from "./FicheMarkdown.svelte";
+  import Markdown from "svelte-markdown";
 
 
   // Stockage du token d'identification
@@ -136,12 +136,12 @@
       {#each conversations as conv}
         <button
           class="chat-button {conv.active ? 'active' : ''}"
-          on:click={() => selectConversation(conv.id)}
+          onclick={() => selectConversation(conv.id)}
         >
           {conv.title}
         </button>
       {/each}
-      <button class="chat-button new" on:click={newConversation}>
+      <button class="chat-button new" onclick={newConversation}>
         + Nouvelle conversation
       </button>
     </aside>
@@ -153,14 +153,14 @@
       <div class="messages-field">
         {#each currentConversation as message}
           <p class={message.role === "user" ? "message-user" : "message-bot"}>
-            {message.content}
+          <Markdown source={message.content} />
           </p>
         {/each}
       </div>
 
       <!-- Saisie du message dans le formulaire -->
       <footer class="input-area">
-        <form on:submit={handleSubmitForm}>
+        <form onsubmit={handleSubmitForm}>
           <input
             type="text"
             placeholder="Pose ta question ici"
