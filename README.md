@@ -1,43 +1,41 @@
-# Svelte + Vite
+# O'Chat – Application de chat IA avec Svelte & PocketBase
 
-This template should help get you started developing with Svelte in Vite.
+## Objectif du projet
+Ce projet illustre ma capacité à concevoir une application front‑end complète en **Svelte**, intégrant une **API d’intelligence artificielle (Mistral)** et une **base de données PocketBase** pour la persistance des messages.  
+Il s’agit d’un exercice pratique pour mettre en œuvre la gestion d’état, l’intégration d’API, la structuration en composants et le design responsive.
 
-## Recommended IDE Setup
+---
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Ce que j’ai réalisé
+- Mise en place d’un **système de multi‑conversations** avec création, sélection et gestion de plusieurs chats en parallèle.  
+- Intégration de l’**API Mistral** pour envoyer le contexte conversationnel complet et afficher les réponses de l’IA.  
+- Sauvegarde des échanges (utilisateur et IA) dans **PocketBase**, avec distinction grâce à un champ booléen.  
+- Utilisation de **Markdown** pour enrichir l’affichage des réponses.  
+- Conception d’une **interface responsive** avec Flexbox et media queries, adaptée aux écrans desktop et mobile.  
+- Organisation du projet en plusieurs fichiers (`App.svelte`, `main.js`, `app.css`, `Markdown.svelte`) pour plus de clarté et de modularité.
 
-## Need an official Svelte framework?
+---
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## Compétences mises en œuvre
+- **Svelte** : gestion des états réactifs et composants modulaires.  
+- **PocketBase** : persistance des données et gestion d’une API REST.  
+- **API externe (Mistral)** : intégration et traitement des réponses JSON.  
+- **CSS moderne** : Flexbox, media queries, design responsive.  
+- **JavaScript ES6+** : logique applicative et gestion des appels réseau.
 
-## Technical considerations
+---
 
-**Why use this over SvelteKit?**
+## Ce que ce projet démontre
+- Ma capacité à **concevoir une application complète** de bout en bout.  
+- Mon aptitude à **intégrer des API externes** et gérer des données dynamiques.  
+- Mon sens de la **structuration du code** et de l’organisation en composants.  
+- Mon souci de l’**expérience utilisateur** avec une interface claire et responsive.  
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+---
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `checkJs` in the JS template?**
-
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+## Améliorations envisagées
+- Créer une collection `Conversations` dans PocketBase pour relier les messages à chaque session.  
+- Filtrer les messages par conversation active.  
+- Ajouter la suppression de conversation avec confirmation.  
+- Améliorer le style visuel (bulles de chat, avatars, timestamps).  
+- Documenter chaque composant dans un dossier `docs/`.
